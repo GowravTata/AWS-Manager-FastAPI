@@ -1,6 +1,8 @@
 import boto3
-from core.config import Config
-conf=Config()
+import os
+
+AccesskeyID = os.getenv("AccesskeyID")
+SecretAccessKey = os.getenv("SecretAccessKey")
 
 class AWSClient:
     def __init__(self,service_name: str,region_name: str):
@@ -11,8 +13,8 @@ class AWSClient:
         self.client_obj =  boto3.client(
                 self.service_name,
                 region_name=self.region_name,
-                aws_access_key_id=conf.AccesskeyID,
-                aws_secret_access_key=conf.SecretAccessKey
+                aws_access_key_id=AccesskeyID,
+                aws_secret_access_key=SecretAccessKey
             )
         return self.client_obj
         
