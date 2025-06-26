@@ -13,9 +13,9 @@ ENV PYTHONPATH=~/work/
 RUN pip install --upgrade pip
 
 # Install the required dependencies
-RUN pip install -r requirements.txt
+RUN pip install -r r
 
-# Expose port 8000
+
 EXPOSE 8000
 
 # Set the entrypoint command

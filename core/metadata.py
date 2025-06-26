@@ -1,3 +1,4 @@
+from enum import Enum
 tags_metadata=[
     {
         "name":"Health",
@@ -8,3 +9,16 @@ tags_metadata=[
         "description":"APIs related to EC2"
     }
 ]
+
+
+
+class Services(str,Enum):
+    ElasticCompute="ec2"
+
+class InstanceStates(str,Enum):
+    running =  'running'
+    pending= 'pending'
+    shutting_down = 'shutting_down'
+    terminated = 'terminated'
+    stopping='stopping'
+    stopped='stopped'
