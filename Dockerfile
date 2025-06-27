@@ -14,7 +14,7 @@ ENV PYTHONPATH=~/work/
 RUN pip install --upgrade pip
 
 # Install the required dependencies
-RUN pip install -r r
+RUN pip install -r requirements.txt
 
 
 EXPOSE 8000

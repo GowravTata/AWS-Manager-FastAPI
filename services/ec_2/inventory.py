@@ -1,11 +1,17 @@
 from fastapi import HTTPException, status
-from core.metadata import InstanceStates
-from core.connector import AWSClient
-from core.metadata import Services
+from validators.ec2.instances import InstanceStates
+from utils.connector import AWSClient
+from utils.metadata import Services
 from typing import List,Dict
-from pdb import set_trace as bp
 
-def instance_list(region_name: str,instance_state_name: str )-> Dict : 
+def instance_list(region_name: str,instance_state_name: str)-> Dict | list: 
+    """
+    This function tries to get the instance list based on region name and
+    instance state name
+    region_name: Name of the region to which instances are to be fetched
+    instance_state_name: Name of the instance state to which instances are to
+                            be fetched
+    """
     try:
         client=AWSClient(Services.ElasticCompute, region_name)
         ec2=client.connect()
@@ -13,7 +19,7 @@ def instance_list(region_name: str,instance_state_name: str )-> Dict :
                     'Name':'instance-state-name',
                     'Values' : [instance_state_name]
                  }
-        response = ec2.describe_instances(Filters=[filters] )  # type: ignore
+        response = ec2.describe_instances(Filters=[filters])  
         instances = []
         for reservation in response['Reservations']:
             for instance in reservation['Instances']:
@@ -28,26 +34,39 @@ def instance_list(region_name: str,instance_state_name: str )-> Dict :
                     'Name': instance.get('Tags')[0]['Value']
                 })
         if not instances:
-             return {'message':"No Records Found"  }
+             return instances
         return {'data':instances}
     except Exception as error:
-        raise HTTPException(
-             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-             detail=error.args
-             )
-             
+          raise HTTPException(
+               status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+               detail=error.args
+               )
+
 def get_instance_ids(region_name: str, state: str)-> List:
-     try:
+    """
+    Function to get instance ids based on region name and instance state
+    region_name: Name of the region to which instances are to be fetched
+    state: Name of the instance state to which instances are be fetched
+    """
+    try:
           all_instances = instance_list(region_name, state)
-          instance_ids = [instance['InstanceId'] for instance in all_instances['data']]
+          if isinstance(all_instances,list):
+               return all_instances
+          instance_ids = [instance['InstanceId'] for instance in
+                            all_instances['data']]
           return instance_ids
-     except Exception as error:
+    except Exception as error:
           raise HTTPException(
              status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
              detail=error.args[0]
-             )             
+             )
 
-def stop_instance(region_name: str,instance_id: str):
+def stop_instance(region_name: str,instance_id: str) -> Dict:
+    """
+    Function to stop instance based on region name and instance id
+    region_name: Name of the region of instance to be stopped
+    state: ID of the instance to be stopped
+    """
     try:
         all_instances = get_instance_ids(region_name, InstanceStates.running)
         client=AWSClient(Services.ElasticCompute, region_name)
@@ -68,11 +87,18 @@ def stop_instance(region_name: str,instance_id: str):
     
     
 def terminate_all_instances(region_name:str, state: str)->Dict:
-     try:
+    """
+    Function to terminate instance based on region name and instance state
+    region_name: Name of the region of instance to be terminated
+    state: Name of the instance state to which instances are be terminated
+    """
+    try:
+          message = {'message':[]}
           all_instances = get_instance_ids(region_name,state)
+          if isinstance(all_instances,list):
+               return  {'message':f'No Instances in {state} state'}
           client=AWSClient(Services.ElasticCompute, region_name)
           ec2 =  client.connect()
-          message = {'message':[]}
           for instance in all_instances:
                response = ec2.terminate_instances( # type: ignore
                          InstanceIds=[
@@ -80,9 +106,10 @@ def terminate_all_instances(region_name:str, state: str)->Dict:
                          ]
                     )
                if response:
-                    message['message'].append(response['TerminatingInstances'][0]['InstanceId'])
+                    message['message'].append(response
+                    ['TerminatingInstances'][0]['InstanceId'])
           return message
-     except Exception as error:
+    except Exception as error:
           raise HTTPException(
                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                detail=error.args[0]

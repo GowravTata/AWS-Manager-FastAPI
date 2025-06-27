@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from controls.health.health_views import health_check_apis
 from controls.ec_2.ec2_views import ec2_apis
-from core.metadata import tags_metadata
+from utils.metadata import tags_metadata
 
 app = FastAPI(title="AWS Manager",
     contact={
