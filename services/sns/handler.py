@@ -15,10 +15,9 @@ def create_sns_topic(json_data: dict)-> dict:
         attributes =json_data.get('attributes')
         tags=json_data.get('tags')
         tags_pairs =[{'Key':key,'Value':tags[key]} for key in tags]
+        topic_name= topic_name + '.fifo' if attributes['FifoTopic'] else topic_name
         client=AWSClient(Services.SNS, region_name)
         sns=client.connect()
-        bp()
-        
         response = sns.create_topic(
             Name=topic_name,
             Attributes=attributes,
