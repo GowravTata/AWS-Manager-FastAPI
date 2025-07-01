@@ -31,8 +31,8 @@ class InstanceStates(str,Enum):
     stopped='stopped'
     
 class SNSCreateTopicAttributes(BaseModel):
-    DeliveryPolicy: str='true'
-    DisplayName: str='true'
+    # DeliveryPolicy: str='true'
+    DisplayName: str
     FifoTopic: str='true'
     
     

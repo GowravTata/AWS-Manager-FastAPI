@@ -9,8 +9,8 @@ url = f"{host}/create_topic"
 params= {'instance_state_name':'running','region_name':'us-east-1'}
 payload = {
   'region_name':'us-east-1',
-  'topic_name':'DataProcessingEngine',
-  'attributes':{'FifoTopic':'true'},
+  'topic_name':'ProcesserByGowrav.fifo',
+  'attributes':{'FifoTopic':'true','DisplayName':'FirstCreatePipe'},
   'tags': {
     'name':'Gowrav'
   }
