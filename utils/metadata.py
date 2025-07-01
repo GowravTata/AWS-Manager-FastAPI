@@ -1,6 +1,5 @@
 from enum import Enum
 from pydantic import BaseModel
-from typing import Optional
 
 tags_metadata=[
     {
@@ -14,6 +13,10 @@ tags_metadata=[
     {
         "name":"SNS",
         "description":"APIs related to SNS"
+    },
+    {
+        "name":"Cloud9",
+        "description":"APIs related to Cloud9"
     }
 ]
 
@@ -21,6 +24,7 @@ tags_metadata=[
 class Services(str,Enum):
     ElasticCompute="ec2"
     SNS="sns"
+    CloudNine='cloud9'
 
 class InstanceStates(str,Enum):
     running =  'running'
@@ -31,11 +35,8 @@ class InstanceStates(str,Enum):
     stopped='stopped'
     
 class SNSCreateTopicAttributes(BaseModel):
-    # DeliveryPolicy: str='true'
     DisplayName: str
     FifoTopic: str='true'
-    
-    
     
 class CreateTopic(BaseModel):
     region_name:str

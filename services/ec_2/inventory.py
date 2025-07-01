@@ -4,7 +4,7 @@ from utils.connector import AWSClient
 from utils.metadata import Services
 from typing import List,Dict
 
-def instance_list(region_name: str,instance_state_name: str)-> Dict or list: 
+def instance_list(region_name: str,instance_state_name: str)-> Dict or list: # type: ignore
     """
     This function tries to get the instance list based on region name and
     instance state name
@@ -19,20 +19,21 @@ def instance_list(region_name: str,instance_state_name: str)-> Dict or list:
                     'Name':'instance-state-name',
                     'Values' : [instance_state_name]
                  }
-        response = ec2.describe_instances(Filters=[filters])  
+        response = ec2.describe_instances(Filters=[filters])   # type: ignore
         instances = []
         for reservation in response['Reservations']:
             for instance in reservation['Instances']:
-                    instances.append({
-                    'InstanceId': instance.get('InstanceId'),
-                    'State': instance['State']['Name'],
-                    'InstanceType': instance.get('InstanceType'),
-                    'PublicIP': instance.get('PublicIpAddress'),
-                    'PrivateIP': instance.get('PrivateIpAddress'),
-                    'LaunchTime': str(instance.get('LaunchTime')),
-                    'PlatformDetails': instance.get('PlatformDetails'),
-                    'Name': instance.get('Tags')[0]['Value']
-                })
+                    if Services.CloudNine not in instance.get('Tags')[1]['Value']:
+                         instances.append({
+                         'InstanceId': instance.get('InstanceId'),
+                         'State': instance['State']['Name'],
+                         'InstanceType': instance.get('InstanceType'),
+                         'PublicIP': instance.get('PublicIpAddress'),
+                         'PrivateIP': instance.get('PrivateIpAddress'),
+                         'LaunchTime': str(instance.get('LaunchTime')),
+                         'PlatformDetails': instance.get('PlatformDetails'),
+                         'Name': instance.get('Tags')[0]['Value']
+                    })
         if not instances:
              return instances
         return {'data':instances}
@@ -99,7 +100,7 @@ def terminate_all_instances(region_name:str, state: str)->Dict:
                return  {'message':f'No Instances in {state} state'}
           client=AWSClient(Services.ElasticCompute, region_name)
           ec2 =  client.connect()
-          for instance in all_instances:
+          for instance in all_instances: # type: ignore
                response = ec2.terminate_instances( # type: ignore
                          InstanceIds=[
                               instance,

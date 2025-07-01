@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
 
-class Payload(BaseModel):
+class StopInstancePayload(BaseModel):
     instance_id: str = "i-234122d213"
     region_name: str = "us-east-1"
     
@@ -16,4 +16,3 @@ class InstanceStates(str,Enum):
 class ListInstance(BaseModel):
     region_name: str
     instance_state_name : InstanceStates
-

@@ -1,5 +1,4 @@
-import requests,os
-import json
+import requests
 from pdb import set_trace as bp
 
 host = "http://127.0.0.1:8000/api/v1"
