@@ -4,7 +4,7 @@ from utils.connector import AWSClient
 from utils.metadata import Services
 from typing import List,Dict
 
-def instance_list(region_name: str,instance_state_name: str)-> Dict | list: 
+def instance_list(region_name: str,instance_state_name: str)-> Dict or list: 
     """
     This function tries to get the instance list based on region name and
     instance state name
